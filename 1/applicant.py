@@ -1,5 +1,5 @@
 import re
-
+import json
 class Applicant:
   def __init__(self, id, name, address, phone, profession):
     self._id = id
@@ -8,6 +8,35 @@ class Applicant:
     self._phone = self.validate_value(phone, "phone", is_required=True, only_letters=False, regex=r'^\+\d{1,3}\d{3}\d{3}\d{4}$')
     self._profession = self.validate_value(profession, "profession", is_required=True, only_letters=True)
 
+    @classmethod
+    def from_json(cls, json_str: str):
+        try:
+
+            data = json.loads(json_str)
+
+
+            required_fields = [
+                'id', 'name', 'address', 'profession', 'phone'
+            ]
+
+            for field in required_fields:
+                if field not in data:
+                    raise ValueError(f"Не найдена строка: {field}")
+
+
+            return cls(
+                id=data['id'],
+                name=data['name'],
+                address=data['address'],
+                profession=data['profession'],
+                phone=data['phone']
+            )
+
+        except json.JSONDecodeError:
+            raise ValueError("Не корректный формат")
+        except Exception as e:
+            raise ValueError(f"Ошибка создания объекта: {str(e)}")
+    
     @staticmethod
     def validate_value(value, field_name, is_required=True, only_letters=False, regex=None):
 
@@ -56,20 +85,19 @@ class Applicant:
     return f"Applicant(ID ={self._id}, Имя ='{self._name}', Адрес ='{self._address}', Телефон ='{self._phone}', Профессия ='{self._profession}')"
 
 
-try:
-    applicant1 = Applicant(1, "Иван Иванович", "Пушкина 1", "+78888888888", "Кассир") #Всеправильно
-    print(applicant1)
-except ValueError as e:
-    print(f"Ошибка создания Соискателя: {e}")
+
+json_data = '''
+    {
+        "id": 1,
+        "name": "Иванов Иван Иванович",
+        "address": "Пушкина 1",
+        "profession": "Инженер",
+        "phone": "+79898983374"
+    }
+    '''
 
 try:
-    applicant2 = Applicant(2, "", "Пушкина 1", "+78888888888", "Кассир") #Неправильное имя
-    print(applicant2)
+    applicant = Applicant.from_json(json_data)
+    print(applicant)
 except ValueError as e:
-    print(f"Ошибка создания Соискателя: {e}")
-
-try:
-    applicant3 = Applicant(3, "123", "Пушкина 1", "+78888888888", "Кассир") #Неправильное имя
-    print(applicant3)
-except ValueError as e:
-    print(f"Ошибка создания Соискателя: {e}")
+    print(f"Ошибка: {e}")
