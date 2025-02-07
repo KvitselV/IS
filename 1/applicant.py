@@ -92,6 +92,17 @@ class Applicant:
         return False
     return self._id == other._id
 
+class ApplicantShort:
+    def __init__(self, applicant):
+        if not isinstance(applicant, Applicant):
+            raise TypeError("Коротка версия должна быть создана на основе полной")
+        self._id = applicant._id
+        self._name = applicant._name
+        self._phone = applicant._phone
+
+    def __str__(self):
+        return f"ApplicantShort(ID={self._id}, Имя={self._name}, Телефон={self._phone})"
+
 json_data = '''
     {
         "id": 1,
