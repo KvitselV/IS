@@ -1,5 +1,35 @@
+import re
+
 class Applicant:
+    @staticmethod
+    def validate_name(name):
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError("Имя - не пустая строка")
+
+    @staticmethod
+    def validate_address(address):
+        if not isinstance(address, str):
+            raise ValueError("Адрес - не пустая строка")
+
+    @staticmethod
+    def validate_phone(value):
+        if not value.strip():
+            raise ValueError("Телефон - не пустая строка.")
+        if not re.match(r'^\+\d{1,3}\d{3}\d{3}\d{4}$', value):
+            raise ValueError("Телефон должен быть формата +XXXXXXXXXXX.")
+        return value
+
+    @staticmethod
+    def validate_profession(profession):
+        if not isinstance(profession, str):
+          raise ValueError("Профессия - не пустая стрка")
+  
   def __init__(self, id, name, address, phone, profession):
+    Applicant.validate_name(name)
+    Applicant.validate_address(address)
+    Applicant.validate_phone(phone)
+    Applicant.validate_profession(profession)
+    
     self._id = id
     self._name = name
     self._address = address
@@ -40,5 +70,20 @@ class Applicant:
     return f"Applicant(ID ={self._id}, Имя ='{self._name}', Адрес ='{self._address}', Телефон ='{self._phone}', Профессия ='{self._profession}')"
 
 
-applicant1 = Applicant(1, "Иван Иванович", "Пушкина 1", "+777777777", "Кассир")
-print(applicant1)
+try:
+    applicant1 = Applicant(1, "Иван Иванович", "Пушкина 1", "+78888888888", "Кассир") #Всеправильно
+    print(applicant1)
+except ValueError as e:
+    print(f"Ошибка создания Соискателя: {e}")
+
+try:
+    applicant2 = Applicant(2, "", "Пушкина 1", "+78888888888", "Кассир") #Неправильное имя
+    print(applicant2)
+except ValueError as e:
+    print(f"Ошибка создания Соискателя: {e}")
+
+try:
+    applicant3 = Applicant(3, 123, "Пушкина 1", "+78888888888", "Кассир") #Неправильное имя
+    print(applicant3)
+except ValueError as e:
+    print(f"Ошибка создания Соискателя: {e}")
