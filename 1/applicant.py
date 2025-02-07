@@ -1,40 +1,26 @@
 import re
 
 class Applicant:
-    @staticmethod
-    def validate_name(name):
-        if not isinstance(name, str) or not name.strip():
-            raise ValueError("Имя - не пустая строка")
-
-    @staticmethod
-    def validate_address(address):
-        if not isinstance(address, str):
-            raise ValueError("Адрес - не пустая строка")
-
-    @staticmethod
-    def validate_phone(value):
-        if not value.strip():
-            raise ValueError("Телефон - не пустая строка.")
-        if not re.match(r'^\+\d{1,3}\d{3}\d{3}\d{4}$', value):
-            raise ValueError("Телефон должен быть формата +XXXXXXXXXXX.")
-        return value
-
-    @staticmethod
-    def validate_profession(profession):
-        if not isinstance(profession, str):
-          raise ValueError("Профессия - не пустая стрка")
-  
   def __init__(self, id, name, address, phone, profession):
-    Applicant.validate_name(name)
-    Applicant.validate_address(address)
-    Applicant.validate_phone(phone)
-    Applicant.validate_profession(profession)
-    
     self._id = id
-    self._name = name
-    self._address = address
-    self._phone = phone
-    self._profession = profession
+    self._name = self.validate_value(name, "name", is_required=True, only_letters=True)
+    self._address = self.validate_value(address, "adress", is_required=True, only_letters=False)
+    self._phone = self.validate_value(phone, "phone", is_required=True, only_letters=False, regex=r'^\+\d{1,3}\d{3}\d{3}\d{4}$')
+    self._profession = self.validate_value(profession, "profession", is_required=True, only_letters=True)
+
+    @staticmethod
+    def validate_value(value, field_name, is_required=True, only_letters=False, regex=None):
+
+        if is_required and not value.strip():
+            raise ValueError(f"{field_name} Не может быть пустой")
+
+        if only_letters and not value.replace(" ", "").isalpha():
+            raise ValueError(f"{field_name} Не может содержать цифр")
+
+        if regex and not re.match(regex, value):
+            raise ValueError(f"{field_name} Неверный формат: {regex}")
+
+        return value  
 
   def get_id(self):
     return self._id
@@ -83,7 +69,7 @@ except ValueError as e:
     print(f"Ошибка создания Соискателя: {e}")
 
 try:
-    applicant3 = Applicant(3, 123, "Пушкина 1", "+78888888888", "Кассир") #Неправильное имя
+    applicant3 = Applicant(3, "123", "Пушкина 1", "+78888888888", "Кассир") #Неправильное имя
     print(applicant3)
 except ValueError as e:
     print(f"Ошибка создания Соискателя: {e}")
