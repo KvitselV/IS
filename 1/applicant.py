@@ -84,7 +84,13 @@ class Applicant:
   def __str__(self):
     return f"Applicant(ID ={self._id}, Имя ='{self._name}', Адрес ='{self._address}', Телефон ='{self._phone}', Профессия ='{self._profession}')"
 
+  def __repr__(self):
+    return f"Applicant(ID={self._id}, Имя='{self._name}')"
 
+  def __eq__(self, other):
+    if not isinstance(other, Applicant):
+        return False
+    return self._id == other._id
 
 json_data = '''
     {
