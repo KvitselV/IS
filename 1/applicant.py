@@ -47,8 +47,8 @@ class Applicant:
                 id=data['id'],
                 name=data['name'],
                 address=data['address'],
-                profession=data['profession'],
                 phone=data['phone']
+                profession=data['profession'],
             )
 
         except json.JSONDecodeError:
@@ -56,6 +56,16 @@ class Applicant:
         except Exception as e:
             raise ValueError(f"Ошибка создания объекта: {str(e)}")
 
+    def _from_string(self, data_string):
+        try:
+            parts = data_string.split(';')
+            if len(parts) != 5:
+                raise ValueError("Неправильный формат строки. Необходимо 5 значений, разделенных точкой с запятой.")
+            id, name, address, phone, contact = parts
+            self._validate(int(id), name, address, phone, profession)
+        except (ValueError, IndexError) as e:
+            raise ValueError(f"Ошибка разбора строки: {e}")
+    
     def __repr__(self):
         return f"Applicant(ID={self._id}, Имя='{self._name}')"
 
