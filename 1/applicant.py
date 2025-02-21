@@ -1,4 +1,4 @@
-import re
+ import re
 import json
 
 
@@ -9,8 +9,7 @@ class Applicant:
         self._id = id
         self._name = self.validate_value(name, "name", is_required=True, only_letters=True)
         self._address = self.validate_value(address, "adress", is_required=True, only_letters=False)
-        self._phone = self.validate_value(phone, "phone", is_required=True, only_letters=False,
-                                          regex=r'^\+\d{1,3}\d{3}\d{3}\d{4}$')
+        self._phone = self.validate_value(phone, "phone", is_required=True, only_letters=False, regex=r'^\+\d{1,3}\d{3}\d{3}\d{4}$')
         self._profession = self.validate_value(profession, "profession", is_required=True, only_letters=True)
 
     @staticmethod
