@@ -1,15 +1,16 @@
 import re
 import json
+
+
 class Applicant:
-
-
 
     def __init__(self, id, name, address, phone, profession):
 
         self._id = id
         self._name = self.validate_value(name, "name", is_required=True, only_letters=True)
         self._address = self.validate_value(address, "adress", is_required=True, only_letters=False)
-        self._phone = self.validate_value(phone, "phone", is_required=True, only_letters=False, regex=r'^\+\d{1,3}\d{3}\d{3}\d{4}$')
+        self._phone = self.validate_value(phone, "phone", is_required=True, only_letters=False,
+                                          regex=r'^\+\d{1,3}\d{3}\d{3}\d{4}$')
         self._profession = self.validate_value(profession, "profession", is_required=True, only_letters=True)
 
     @staticmethod
@@ -26,13 +27,11 @@ class Applicant:
 
         return value
 
-
     @classmethod
     def from_json(cls, json_str: str):
         try:
 
             data = json.loads(json_str)
-
 
             required_fields = [
                 'id', 'name', 'address', 'profession', 'phone'
@@ -42,30 +41,37 @@ class Applicant:
                 if field not in data:
                     raise ValueError(f"Не найдена строка: {field}")
 
-
             return cls(
                 id=data['id'],
                 name=data['name'],
                 address=data['address'],
-                phone=data['phone']
-                profession=data['profession'],
+                phone=data['phone'],
+                profession = data['profession']
             )
 
         except json.JSONDecodeError:
-            raise ValueError("Не корректный формат")
+                raise ValueError("Не корректный формат")
         except Exception as e:
             raise ValueError(f"Ошибка создания объекта: {str(e)}")
 
-    def _from_string(self, data_string):
+    @classmethod
+    def from_string(cls, data_string):
         try:
             parts = data_string.split(';')
             if len(parts) != 5:
                 raise ValueError("Неправильный формат строки. Необходимо 5 значений, разделенных точкой с запятой.")
-            id, name, address, phone, contact = parts
-            self._validate(int(id), name, address, phone, profession)
+            id, name, address, phone, profession = parts
+            cls._id = id
+            cls._name = cls.validate_value(name, "name", is_required=True, only_letters=True)
+            cls._address = cls.validate_value(address, "adress", is_required=True, only_letters=False)
+            cls._phone = cls.validate_value(phone, "phone", is_required=True, only_letters=False, regex=r'^\+\d{1,3}\d{3}\d{3}\d{4}$')
+            cls._profession = cls.validate_value(profession, "profession", is_required=True, only_letters=True)
+
+            return cls(id, name, address, phone, profession)
+
         except (ValueError, IndexError) as e:
             raise ValueError(f"Ошибка разбора строки: {e}")
-    
+
     def __repr__(self):
         return f"Applicant(ID={self._id}, Имя='{self._name}')"
 
@@ -73,7 +79,6 @@ class Applicant:
         if not isinstance(other, Applicant):
             return False
         return self._id == other._id
-
 
     def get_id(self):
         return self._id
@@ -103,10 +108,11 @@ class Applicant:
         return self._profession
 
     def set_profession(self, profession):
-       self._profession = profession
+        self._profession = profession
 
     def __str__(self):
         return f"Applicant(ID ={self._id}, Имя ='{self._name}', Адрес ='{self._address}', Телефон ='{self._phone}', Профессия ='{self._profession}')"
+
 
 class ApplicantShort:
     def __init__(self, applicant):
@@ -125,13 +131,16 @@ json_data = '''
         "id": 1,
         "name": "Иванов Иван Иванович",
         "address": "Пушкина 1",
-        "profession": "Инженер",
-        "phone": "+79898983374"
+        "phone": "+79898983374",
+        "profession": "Инженер"
+
     }
     '''
 
 try:
     applicant = Applicant.from_json(json_data)
+    applicant1 = Applicant.from_string("2;ИвановИванИванович ;Пушкина 1;+79898937444;Инженер")
+    print(applicant1)
     print(applicant)
 except ValueError as e:
     print(f"Ошибка: {e}")
